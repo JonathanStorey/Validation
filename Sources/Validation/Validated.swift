@@ -1,7 +1,5 @@
 //  Created by Jonathan Storey on 1/18/22.
 
-import Foundation
-
 @propertyWrapper
 public struct Validated<Rule: ValidationRule> {
     
