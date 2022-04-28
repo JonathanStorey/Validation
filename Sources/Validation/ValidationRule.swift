@@ -17,7 +17,7 @@ public protocol ValidationRule {
     
     var fallbackValue: Value { get }
     
-    func validate(_ value: Value) -> ValidationResult
+    func validate(_ value: Value) -> Result<Value, Failure>
 }
 
 public extension ValidationRule where Value == String {
