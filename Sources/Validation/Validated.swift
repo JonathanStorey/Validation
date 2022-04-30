@@ -15,6 +15,8 @@ public struct Validated<Rule: ValidationRule> {
 }
 
 extension Validated {
+    
+    // returns our validation result
     public var projectedValue: Rule.ValidationResult { rule.validate(wrappedValue) }
 }
 
@@ -34,6 +36,8 @@ extension Validated {
 
 extension Validated: Encodable where Rule.Value: Encodable {
 
+    // if validated, encodes the original value, or else uses fallback
+    // use a container as it allows us to extend KeyedEncodingContainer
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch projectedValue {
@@ -46,20 +50,25 @@ extension Validated: Encodable where Rule.Value: Encodable {
 }
 
 extension Validated: Decodable where Rule.Value: Decodable {
+    
+    // we initialize a new wrapper with stored value and default rule
+    // since we are using the default rule, we do not perform a validation check here
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(Rule.Value.self)
-        self.init(wrappedValue: value)
+        self.init(wrappedValue: value, Rule.init())
     }
 }
 
 extension Validated: Hashable where Rule.Value: Hashable {
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.wrappedValue)
     }
 }
 
 extension Validated: Equatable where Rule.Value: Equatable {
+    
     public static func == (lhs: Validated<Rule>, rhs: Validated<Rule>) -> Bool {
         return lhs.wrappedValue == rhs.wrappedValue
     }
